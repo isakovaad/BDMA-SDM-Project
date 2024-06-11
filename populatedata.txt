@@ -1,0 +1,68 @@
+LOAD CSV WITH HEADERS FROM 'https://2015.filemail.com/api/file/get?filekey=kmwxLI1lFH0UWxLigxXkTERcohSGl3gMPRfjvSMzz4wzF31jhUQ944_L5TCqz05nAGnK&pk_vid=74df05d49e0012fe1717436572beab92' AS line
+CREATE (:User {
+  id: line.id,
+  name: line.name,
+  email: line.email
+})
+
+
+LOAD CSV WITH HEADERS FROM 'https://2025.filemail.com/api/file/get?filekey=vYhKGMwFcbDY7aI8x3UxunXFx4E0U8CZlMng0zNHrlbUojUQcnG3V2oy37bGQJFCHZhdNg&pk_vid=74df05d49e0012fe1717439085beab92' AS line
+CREATE (:Event {
+  id: line._id,
+  title: line.title,
+  content: line.content
+})
+
+
+LOAD CSV WITH HEADERS FROM 'https://2001-2.filemail.com/api/file/get?filekey=qwiDErqm5_Msjewsq0TF9k7EV0x5qizgtldI2lLEgoFL7BRcMXZgnJGVPy_O-yCtVZa1_4nDXQ' AS line
+CREATE (:Location {
+  longitude: line.longitude,
+  latitude: line.latitude,
+  name: line.name
+})
+
+
+LOAD CSV WITH HEADERS FROM 'https://download1654.mediafire.com/94v4andoi3ogLYM5cgy6ZlKnhcFkJgI1R4VuZwU7gaoszMtVX795zAFbutelqTuRv5NaCuTjLhWDwk4WChx0fLmiEkvcdLJDS1DnQ2FH7mmiNE700a0NcbGbbW5XUNAkYfMppEYSUiwtoTaNMU5iJSx6NlmHqQUDbTOHagqm3A/ziswuhz3kzm4auo/eventtype_semantic.csv' AS line
+CREATE (:EventType {
+  id: line.type_id,
+  type: line.type
+})
+
+LOAD CSV WITH HEADERS FROM 'https://download1501.mediafire.com/h1nztherqdfgIDDn35vKOwB5d-Rxb_J7VDVac3DGT7Q6CCh1_df5TiX4ZWQzHsEUeSekdjA2_NksVmfE7Yii0vprAtYi9ekPpHErSNXBtrQlUCQQAzJq2Lak_6mU--KW3qHOpOX-xd5839sm711ohQjRKsELYEwdf7WVjch4dA/13qc05wy4sg3la2/user_post_event.csv' AS line
+            MATCH (user:User {id: line.user_id})
+            WITH user, line
+            MATCH (event:Event {id: line.event_id})
+            CREATE (user)-[w:post]->(event)
+
+
+LOAD CSV WITH HEADERS FROM 'https://download1322.mediafire.com/4sgcz7h4d7kgHhwkdI4OIicQ6NQMS0W4iKRd_heOmCxMMDdOgFEJYTNy91AtXSQHX8ioh5bVXE397GzXj1GsVK2f1Q1cHLQQbEETF7XvTaSRbYFGPSt52wsX9Ugku010Y3gf3caFWVXOUxRjbD0rhw2yCbmkSVNT1e-bntrwrQ/iyrmzol4ksxoiaj/user_join_event.csv' AS line
+            MATCH (user:User {id: line.userid})
+            WITH user, line
+            MATCH (event:Event {id: line.eventid})
+            CREATE (user)-[w:join]->(event)
+
+
+LOAD CSV WITH HEADERS FROM 'https://download1322.mediafire.com/u3ot8v1mk1agR4x7RyL7VrwWOJnyB9TBmmXYH-pWaWPb5w5c--UWcs5lKYwpYabyR_vm-WVrfprzdAlps_YYD_G7pOXILeVFBSY-x6eUzjFYd8816BCygD26HRPmyMeI5mrbi1BoemIQgJ2KevGC7URxhh8Bp1CauD0_cid0oA/4p33p83av05yagc/user_like_event.csv' AS line
+            MATCH (user:User {id: line.userid})
+            WITH user, line
+            MATCH (event:Event {id: line.eventid})
+            CREATE (user)-[w:like]->(event)
+
+LOAD CSV WITH HEADERS FROM 'https://download1322.mediafire.com/m34y56mujyngGPUpEUytLbvbj3Vo7x7sduUHxSSGEwkw04G4LyNuN2n1khCB2_Z4YNO0j7Mz2Ym1O7XHLcdW2sEobHO6pG-96nv1-LLxeWhtrhbBXEdETw0BohZamJwmtKiGa2bA2GSayxJbUjg3Y4T3w3mkG9lzk04YL9_Aww/v63ikq53f3qoo5m/user_share_event.csv' AS line
+            MATCH (user:User {id: line.userid})
+            WITH user, line
+            MATCH (event:Event {id: line.eventid})
+            CREATE (user)-[w:share]->(event)
+
+LOAD CSV WITH HEADERS FROM 'https://download1509.mediafire.com/l08m3dz4712gHqhIA4HxiUloBiRWEt3MuOCAnk2i96LkLcKw_sA5wexuVzJawyi0xYFg8fWhaCcNrOyUmkZdqVbrUxStW0aRndYZ_Vz17cAxlien-adNOkv6FWbQidOrSvImdQLiaOMGA1ke-v59WDOtUZmIVCYyr-tt4WhM2Q/slh9h7as04nhcrq/event_belong_to_type.csv' AS line
+            MATCH (event:Event {id: line.id})
+            WITH event, line
+            MATCH (type:EventType {id: line.type_id})
+            CREATE (event)-[w:belongto]->(type)
+
+LOAD CSV WITH HEADERS FROM 'https://download1529.mediafire.com/rwom0ypwbjwg_g1dFap7J8wnQEAPJ_sVCCdllv6OF_66ch8IRk0uWtFr86ittv54grkwwBw1ac5PxgDMEtxQ1_APtD_zrJva12HpfFYpYWSc9ozsK2claat_D0LtY0i2pg1gIjE4gFpS5NUvZHika0XJfA38ZUW4-KJkjyPVdw/fhu8ii0xdryjgz4/event_happend_in.csv' AS line
+            MATCH (event:Event {id: line.event_id})
+            WITH event, line
+            MATCH (location:Location {name: line.location_name})
+            CREATE (event)-[w:happendin]->(location)
+
